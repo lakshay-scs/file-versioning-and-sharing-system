@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Why Choose SnapVault?{% endblock %}
+
+{% block content %}
+<div class="advantages-container container mt-5 pt-5 text-light">
+    <h1 class="text-center mb-4 fw-bold">Why Choose SnapVault?</h1>
+
+    <div class="advantages-grid row row-cols-1 row-cols-md-2 g-4 mb-5">
+        <div class="col">
+            <div class="advantage-card p-4 bg-dark bg-opacity-75 rounded shadow">
+                <h2>📂 File Versioning</h2>
+                <p>Automatically track every file update and roll back to any previous version with ease.</p>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="advantage-card p-4 bg-dark bg-opacity-75 rounded shadow">
+                <h2>🔒 Secure Sharing</h2>
+                <p>Share files with specific users, set expiry dates, or generate password-protected public links.</p>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="advantage-card p-4 bg-dark bg-opacity-75 rounded shadow">
+                <h2>🗂 Centralized Management</h2>
+                <p>All your files, versions, and sharing settings in one organized dashboard.</p>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="advantage-card p-4 bg-dark bg-opacity-75 rounded shadow">
+                <h2>👤 User Authentication</h2>
+                <p>Access control ensures that only authorized users can view or modify files.</p>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="advantage-card p-4 bg-dark bg-opacity-75 rounded shadow">
+                <h2>🖼 File Preview</h2>
+                <p>Preview text and images directly in the browser without downloading.</p>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="advantage-card p-4 bg-dark bg-opacity-75 rounded shadow">
+                <h2>✨ Modern Interface</h2>
+                <p>Responsive design with notifications and a clean, intuitive user experience.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔽 Comparison Table Section -->
+    <div class="comparison-section mt-5">
+        <h2 class="text-center mb-4 fw-bold text-light">SnapVault vs WhatsApp</h2>
+        <p class="lead text-center mb-4">
+            WhatsApp is great for chatting — but SnapVault is built for <strong>secure, version-controlled file management.</strong>
+        </p>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-striped align-middle text-center bg-dark bg-opacity-75 text-light">
+                <thead class="table-light text-dark">
+                    <tr>
+                        <th>Feature</th>
+                        <th>WhatsApp</th>
+                        <th>SnapVault</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Version Control</strong></td><td>❌ Overwrites files; no history</td><td>✅ Keeps all versions (v1, v2, etc.) with rollback</td></tr>
+                    <tr><td><strong>Ownership & Permissions</strong></td><td>❌ Once shared, you lose control</td><td>✅ You decide who accesses and for how long</td></tr>
+                    <tr><td><strong>Expiry / Temporary Access</strong></td><td>❌ Not available</td><td>✅ Set automatic expiry dates for shared links</td></tr>
+                    <tr><td><strong>Password Protection</strong></td><td>❌ Not supported</td><td>✅ Optional password for public sharing</td></tr>
+                    <tr><td><strong>Centralized Storage</strong></td><td>❌ Files lost in chats</td><td>✅ All files organized in one vault</td></tr>
+                    <tr><td><strong>Delete for Self vs. Everyone</strong></td><td>🟡 Limited</td><td>✅ Choose to delete for yourself or all users</td></tr>
+                    <tr><td><strong>Audit & History</strong></td><td>❌ No tracking</td><td>✅ Full upload history and version logs</td></tr>
+                    <tr><td><strong>Privacy & Security</strong></td><td>🟡 Media scanned by WhatsApp</td><td>✅ Files stored privately on your own server</td></tr>
+                    <tr><td><strong>Preview Functionality</strong></td><td>🟡 Basic (images, PDFs only)</td><td>✅ Previews DOCX, text, images, and PDFs</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-light btn-lg">← Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

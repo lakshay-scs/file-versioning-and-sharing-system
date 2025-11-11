@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Share File - {{ file.filename }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Share File: {{ file.filename }}</h2>
+
+    {% with messages = get_flashed_messages(with_categories=false) %}
+      {% if messages %}
+        <div class="alert alert-info">
+          {% for message in messages %}
+            <p>{{ message | safe }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <div class="mb-3">
+            <label for="usernames" class="form-label">Usernames to share with (comma separated)</label>
+            <input type="text" class="form-control" id="usernames" name="usernames" value="{{ file.shared_with }}">
+        </div>
+
+        <div class="mb-3">
+            <label for="expiry_days" class="form-label">Expiry (days, 0 for no expiry)</label>
+            <input type="number" class="form-control" id="expiry_days" name="expiry_days" value="{% if file.shared_until %}{{ (file.shared_until - datetime.utcnow()).days }}{% else %}0{% endif %}">
+        </div>
+
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="make_public" name="make_public" {% if file.share_token %}checked{% endif %}>
+            <label class="form-check-label" for="make_public">Make Public</label>
+        </div>
+
+        <div class="mb-3">
+            <label for="public_password" class="form-label">Public Password (optional)</label>
+            <input type="password" class="form-control" id="public_password" name="public_password">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Share Settings</button>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+
+    {% if file.share_token %}
+        <div class="alert alert-info mt-3">
+            <strong>Public Link:</strong>
+            <a href="{{ url_for('public_access', share_token=file.share_token, _external=True) }}" target="_blank">
+                {{ url_for('public_access', share_token=file.share_token, _external=True) }}
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

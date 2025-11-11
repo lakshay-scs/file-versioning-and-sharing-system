@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}History - {{ file.filename }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>History: {{ file.filename }}</h2>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-info">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% if versions %}
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Version</th>
+                    <th>Uploaded By</th>
+                    <th>Uploaded At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% if is_owner %}
+                {# Owner sees all versions #}
+                {% for version in versions %}
+                <tr {% if version.version_number == file.current_version_number %}class="table-success"{% endif %}>
+                    <td>v{{ version.version_number }}</td>
+                    <td>{{ version.uploaded_by }}</td>
+                    <td>{{ version.uploaded_at }}</td>
+                    <td>
+                        <a href="{{ url_for('preview', version_id=version.id) }}" class="btn btn-sm btn-primary">Preview</a>
+                        <a href="{{ url_for('download_version', version_id=version.id) }}" class="btn btn-sm btn-success">Download</a>
+
+                        {% if version.version_number != file.current_version_number %}
+                            <form action="{{ url_for('rollback_version', file_id=file.id, version_id=version.id) }}" method="POST" style="display:inline;">
+                                <button class="btn btn-sm btn-warning" onclick="return confirm('Rollback to this version? This will delete newer versions.');">Rollback</button>
+                            </form>
+                            <form action="{{ url_for('delete_version', version_id=version.id) }}" method="POST" style="display:inline;">
+                                <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this version?');">Delete</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                {# Shared user sees only the latest version #}
+                {% set latest = versions|last %}
+                <tr class="table-success">
+                    <td>v{{ latest.version_number }}</td>
+                    <td>{{ latest.uploaded_by }}</td>
+                    <td>{{ latest.uploaded_at }}</td>
+                    <td>
+                        <a href="{{ url_for('preview', version_id=latest.id) }}" class="btn btn-sm btn-primary">Preview</a>
+                        <a href="{{ url_for('download_version', version_id=latest.id) }}" class="btn btn-sm btn-success">Download</a>
+                    </td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No versions found.</p>
+    {% endif %}
+
+    <a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+</div>
+{% endblock %}

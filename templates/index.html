@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block title %}SnapVault - My Files{% endblock %}
+
+{% block content %}
+<div class="container my-5 text-center">
+
+    <h2>Welcome, {{ current_user.username }}!</h2>
+    <a href="{{ url_for('logout') }}" class="btn btn-outline-light btn-custom mb-4">Logout</a>
+
+    <!-- Search Bar -->
+    <form id="searchForm" action="{{ url_for('search') }}" method="POST" class="d-flex justify-content-center mb-4">
+        <input type="text" name="query" id="fileSearch" class="form-control me-2" placeholder="Search files..." required>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <!-- Upload Card -->
+    <div class="upload-card mb-5">
+        <h4>Upload a New File</h4>
+        <form id="uploadForm" action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" class="d-flex gap-2 flex-wrap justify-content-center">
+            <input type="file" name="file" id="fileInput" class="form-control flex-grow-1" required>
+            <button type="submit" class="btn btn-success btn-custom">Upload</button>
+        </form>
+        <div id="progressContainer" class="progress-bar-container mt-2" style="display:none;">
+            <div id="progressBar" class="progress-bar-fill">0%</div>
+        </div>
+    </div>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=false) %}
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="alert alert-info rounded-3 mb-3">{{ msg | safe }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <h4>Your Files</h4>
+    <div class="row g-4" id="fileContainer">
+        {% for file in files %}
+        <div class="col-sm-6 col-md-4 col-lg-3 file-card-wrapper" data-file-id="{{ file.id }}" data-shared="{{ 'true' if file in shared_files else 'false' }}">
+            <div class="card file-card h-100 p-3 rounded-4">
+                <div class="d-flex justify-content-between mb-2">
+                    <h5 class="card-title text-truncate">{{ file.filename }}</h5>
+                    {% if file in shared_files %}
+                        <span class="badge bg-secondary">Shared</span>
+                    {% endif %}
+                </div>
+
+                <p class="text-muted mb-3">
+                    v{{ file.current_version.number if file.current_version else 'N/A' }}
+                </p>
+
+                <div class="d-flex flex-wrap gap-2">
+                    {% if file.current_version %}
+                        <a href="{{ url_for('history', file_id=file.id) }}" class="btn btn-sm btn-info flex-grow-1">History</a>
+                    {% endif %}
+
+                    {% if file.user_id == current_user.id %}
+                        <a href="{{ url_for('share', file_id=file.id) }}" class="btn btn-sm btn-warning flex-grow-1">Share</a>
+
+                        <!-- Inline Delete Buttons -->
+                        <div class="d-flex gap-2 flex-grow-1 mt-2">
+                            <!-- Delete for Me Only -->
+                            <form class="delete-file-form" data-file-id="{{ file.id }}" action="{{ url_for('delete_file', file_id=file.id) }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="delete_option" value="self">
+                                <button type="submit" class="btn btn-sm btn-outline-warning flex-grow-1">Delete for Me Only</button>
+                            </form>
+
+                            <!-- Delete for Everyone -->
+                            <form class="delete-file-form" data-file-id="{{ file.id }}" action="{{ url_for('delete_file', file_id=file.id) }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="delete_option" value="full">
+                                <button type="submit" class="btn btn-sm btn-outline-danger flex-grow-1">Delete for Everyone</button>
+                            </form>
+                        </div>
+
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <p class="text-center text-light mt-4">No files uploaded yet.</p>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* --- Client-side Search --- */
+document.getElementById('fileSearch').addEventListener('keyup', function() {
+    const filter = this.value.toLowerCase();
+    document.querySelectorAll('.file-card-wrapper').forEach(card => {
+        const filename = card.querySelector('.card-title').textContent.toLowerCase();
+        card.style.display = filename.includes(filter) ? 'block' : 'none';
+    });
+});
+
+/* --- Upload Progress --- */
+const uploadForm = document.getElementById('uploadForm');
+const progressContainer = document.getElementById('progressContainer');
+const progressBar = document.getElementById('progressBar');
+
+uploadForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    if(!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '{{ url_for("upload") }}', true);
+
+    xhr.upload.onprogress = function(e){
+        if(e.lengthComputable){
+            progressContainer.style.display = 'block';
+            const percent = Math.floor((e.loaded / e.total) * 100);
+            progressBar.style.width = percent + '%';
+            progressBar.textContent = percent + '%';
+        }
+    };
+
+    xhr.onload = function(){
+        if(xhr.status === 200){
+            progressBar.style.width = '100%';
+            progressBar.textContent = '100%';
+            setTimeout(()=> { location.reload(); }, 500);
+        } else {
+            alert('Upload failed!');
+        }
+    };
+
+    xhr.send(formData);
+});
+
+/* --- AJAX Delete Files --- */
+document.querySelectorAll('.delete-file-form').forEach(form => {
+    form.addEventListener('submit', function(e){
+        e.preventDefault();
+
+        const fileId = this.dataset.fileId;
+        const formData = new FormData(this);
+
+        fetch(this.action, { method: 'POST', body: formData })
+        .then(res => {
+            if(res.ok){
+                // Remove the file card
+                const cardWrapper = document.querySelector(`.file-card-wrapper[data-file-id='${fileId}']`);
+                if(cardWrapper) cardWrapper.remove();
+
+                // Show success message
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-success rounded-3 mb-3';
+                alertDiv.textContent = 'File deleted successfully!';
+                document.querySelector('.container').prepend(alertDiv);
+                setTimeout(() => alertDiv.remove(), 3000);
+            } else {
+                alert('Failed to delete file!');
+            }
+        })
+        .catch(() => alert('Error deleting file!'));
+    });
+});
+</script>
+{% endblock %}

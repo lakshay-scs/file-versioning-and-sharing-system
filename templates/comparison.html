@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Why SnapVault?{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <h1 class="text-center mb-4">Why Use SnapVault Instead of WhatsApp?</h1>
+
+    <p class="lead text-center">
+        WhatsApp is great for chatting — but SnapVault is built for <strong>secure, controlled, and versioned file sharing.</strong>
+    </p>
+
+    <div class="table-responsive mt-4">
+        <table class="table table-bordered table-hover align-middle text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Feature</th>
+                    <th>WhatsApp</th>
+                    <th>SnapVault</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Version Control</strong></td>
+                    <td>❌ Overwrites files; no version history</td>
+                    <td>✅ Keeps all versions (v1, v2, etc.) and allows rollback</td>
+                </tr>
+                <tr>
+                    <td><strong>Ownership & Permissions</strong></td>
+                    <td>❌ Once shared, you lose control</td>
+                    <td>✅ You decide who can access and for how long</td>
+                </tr>
+                <tr>
+                    <td><strong>Expiry / Temporary Access</strong></td>
+                    <td>❌ Not available</td>
+                    <td>✅ Set automatic expiry dates for shared files</td>
+                </tr>
+                <tr>
+                    <td><strong>Password Protection</strong></td>
+                    <td>❌ Not supported</td>
+                    <td>✅ Optional password for public links</td>
+                </tr>
+                <tr>
+                    <td><strong>Centralized Storage</strong></td>
+                    <td>❌ Files scattered in chats</td>
+                    <td>✅ All files organized in your personal vault</td>
+                </tr>
+                <tr>
+                    <td><strong>Delete for Self vs. Everyone</strong></td>
+                    <td>🟡 Limited options</td>
+                    <td>✅ Choose to delete for yourself or for all users</td>
+                </tr>
+                <tr>
+                    <td><strong>Audit & History</strong></td>
+                    <td>❌ No version or upload tracking</td>
+                    <td>✅ Full upload history, version numbers, and timestamps</td>
+                </tr>
+                <tr>
+                    <td><strong>Privacy & Security</strong></td>
+                    <td>🟡 Media scanned by WhatsApp for policy compliance</td>
+                    <td>✅ Stored securely on your own server / database</td>
+                </tr>
+                <tr>
+                    <td><strong>Preview Functionality</strong></td>
+                    <td>🟡 Basic (images, PDFs only)</td>
+                    <td>✅ Preview text, DOCX, images, PDFs, and more</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Go Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

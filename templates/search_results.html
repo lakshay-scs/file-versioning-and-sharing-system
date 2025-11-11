@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Search Results - {{ query }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Search Results for "{{ query }}"</h2>
+    {% if results %}
+        <ul class="list-group mt-3">
+            {% for file in results %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ file.filename }}
+                    <a href="{{ url_for('history', file_id=file.id) }}" class="btn btn-sm btn-secondary">History</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="mt-3">No files found.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{% block title %}SnapVault{% endblock %}</title>
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom Styles -->
+<style>
+/* ------------------- General Body ------------------- */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    color: #e0e0e0;
+    background-color: #121212;
+    min-height: 100vh;
+}
+
+/* ------------------- Particle Background ------------------- */
+#particle-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* ------------------- Container ------------------- */
+.container {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 50px 20px;
+}
+
+/* ------------------- Buttons ------------------- */
+.btn {
+    background-color: #2ac0d8;
+    color: #fff;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+.btn:hover {
+    background-color: #1fa6c3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(42,192,216,0.4);
+}
+
+/* ------------------- Alerts ------------------- */
+.alert {
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    backdrop-filter: blur(6px);
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+}
+.alert-success { border-left: 4px solid #2ac0d8; }
+.alert-error   { border-left: 4px solid #e64a4a; }
+.alert-warning { border-left: 4px solid #ff9f1c; }
+
+/* ------------------- Forms ------------------- */
+input, textarea, select {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    outline: none;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+input:focus, textarea:focus, select:focus {
+    border-color: #2ac0d8;
+    background: rgba(255,255,255,0.08);
+}
+
+/* ------------------- Tables ------------------- */
+.table-dark {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+.table-dark th, .table-dark td {
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.table-dark th {
+    background: rgba(255,255,255,0.05);
+    color: #b0b0b0;
+    text-align: left;
+}
+.table-dark tr:hover {
+    background: rgba(42,192,216,0.1);
+}
+
+/* ------------------- File Cards ------------------- */
+.file-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(40,40,40,0.85);
+    padding: 16px 20px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    transition: all 0.2s ease;
+    color: #fff; /* File name text black */
+}
+.file-card:hover {
+    background: rgba(42,192,216,0.15);
+    transform: translateY(-2px);
+}
+.file-info { flex: 1; }
+.file-name {
+    font-weight: 500;
+    color: #000; /* Black for visibility */
+}
+.file-meta {
+    font-size: 13px;
+    color: #aaa;
+}
+.file-actions button {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: none;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    background-color: #e64a4a;
+    color: #fff;
+    transition: all 0.2s ease;
+}
+.file-actions button:hover {
+    background-color: #c0392b;
+    transform: translateY(-1px);
+}
+
+/* ------------------- Headings ------------------- */
+h1, h2, h3 {
+    font-weight: 500;
+}
+h2, h3 { color: #b0b0b0; } /* Transient grey for minimal look */
+
+/* ------------------- Responsive ------------------- */
+@media (max-width: 768px) {
+    .file-card { flex-direction: column; align-items: flex-start; }
+    .file-actions { margin-top: 10px; }
+}
+</style>
+
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<canvas id="particle-bg"></canvas>
+
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Particle Script -->
+<script>
+const canvas = document.getElementById('particle-bg'),
+      ctx = canvas.getContext('2d');
+
+let particlesArray = [];
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// Handle resize
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    initParticles();
+});
+
+// Particle class
+class Particle {
+    constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 3 + 1; // 1-4px
+        this.speedX = (Math.random() - 0.5) * 0.5; // subtle motion
+        this.speedY = (Math.random() - 0.5) * 0.5;
+        this.color = `rgba(42,192,216,${Math.random() * 0.2 + 0.05})`; // soft teal
+    }
+
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        // Wrap around edges
+        if (this.x < 0) this.x = canvas.width;
+        if (this.x > canvas.width) this.x = 0;
+        if (this.y < 0) this.y = canvas.height;
+        if (this.y > canvas.height) this.y = 0;
+    }
+
+    draw() {
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+// Initialize particles
+function initParticles() {
+    particlesArray = [];
+    const count = window.innerWidth < 768 ? 60 : 120;
+    for (let i = 0; i < count; i++) {
+        particlesArray.push(new Particle());
+    }
+}
+
+// Animation loop with motion blur
+function animateParticles() {
+    // Semi-transparent fill for motion blur effect
+    ctx.fillStyle = 'rgba(18,18,18,0.2)'; // dark background with alpha
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw each particle
+    particlesArray.forEach(p => {
+        p.update();
+        p.draw();
+    });
+
+    requestAnimationFrame(animateParticles);
+}
+
+initParticles();
+animateParticles();
+</script>
+
+
+
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

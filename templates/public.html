@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Public File - {{ file.filename }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Public File: {{ file.filename }}</h2>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-info">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% if versions %}
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Version</th>
+                    <th>Uploaded By</th>
+                    <th>Uploaded At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for version in versions %}
+                <tr {% if version.version_number == file.current_version %}class="table-success"{% endif %}>
+                    <td>v{{ version.version_number }}</td>
+                    <td>{{ version.uploaded_by }}</td>
+                    <td>{{ version.uploaded_at }}</td>
+                    <td>
+                        <a href="{{ url_for('preview', version_id=version.id) }}" class="btn btn-sm btn-primary">Preview</a>
+                        <a href="{{ url_for('download', version_id=version.id) }}" class="btn btn-sm btn-success">Download</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No versions available.</p>
+    {% endif %}
+
+    <a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+</div>
+{% endblock %}

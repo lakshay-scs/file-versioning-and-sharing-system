@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h3>Preview: {{ file.filename }}</h3>
+
+    {% if text_content %}
+        <pre style="white-space: pre-wrap; word-wrap: break-word;">{{ text_content }}</pre>
+    {% elif b64_data %}
+        {% if mime_type.startswith('image') %}
+            <img src="data:{{ mime_type }};base64,{{ b64_data }}" class="img-fluid">
+        {% elif mime_type == 'application/pdf' %}
+            <iframe src="data:application/pdf;base64,{{ b64_data }}" width="100%" height="600px"></iframe>
+        {% else %}
+            <p>Preview not available for this file type.</p>
+        {% endif %}
+    {% else %}
+        <p>Preview not available for this file type.</p>
+    {% endif %}
+
+    <a href="{{ url_for('history', file_id=file.id) }}" class="btn btn-secondary mt-3">Back to History</a>
+</div>
+{% endblock %}
